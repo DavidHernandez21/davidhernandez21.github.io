@@ -69,3 +69,32 @@ Although not mentioned in the architecture diagram, the pipeline also uses [Open
 ### Using docker to test before deploying on Kubernetes
 
 Troubleshooting and testing the pipeline using docker compose is a good way to test the pipeline before deploying it on Kubernetes (even [kind](https://kind.sigs.k8s.io/)). It really helps to understand how the different components interact with each other and, **specially**, how to configure them. 
+
+## Network Introspection of the pipeline
+
+### Using Kyanos
+
+Using [Kyanos](https://github.com/hengyoush/kyanos) to introspect the network traffic of the pipeline. *Kyanos is an eBPF-based network issue analysis tool that enables you to capture network requests, such as HTTP, Redis, and MySQL requests*, yes you read it right L7 with [eBPF](https://ebpf.io/)
+
+Running the following command can identity the slowest requests in the pipeline:
+
+```bash
+# considered increasing the time to catch more requests
+sudo kyanos stat --slow --time 10
+```
+
+The TUI will show something like this:
+
+![Kyanos TUI](/assets/images/rabbitmq_metric_scrape.png)
+
+Scrapping the RabbitMQ metrics takes a whooping (and fortunately constant) ~35ms. You might also see requests from vector aggregator to openobserve here (interesting considering that the data has been compressed)
+
+### Increasing granularity with [TraceeShark](https://github.com/aquasecurity/traceeshark)
+
+> Traceeshark brings the world of Linux runtime security monitoring and advanced system tracing to the familiar and ubiquitous network analysis tool Wireshark. Using Traceeshark, you can load Tracee captures in JSON format into Wireshark, and analyze them using Wireshark's advanced display and filtering capabilities
+
+After tracing the pipeline with Tracee, you can load the JSON file into Wireshark and analyze it using Wireshark's filtering capabilities. Filtering by event name and process name `(tracee.eventName == "net_packet_raw") && (tracee.processName == "erts_sched_2")` you will see many packets from RabbitMQ to Vector being retransmitted
+
+`75055	3.711563231	TCP	e798c7cf4174	1	20	erts_sched_2	33	net_packet_raw	writev	172.18.0.8	172.18.0.13	[TCP Retransmission] 15692 → 40404 [PSH, ACK] Seq=7241 Ack=187 Win=65024 Len=7240 TSval=3992918735 TSecr=2436525398`
+
+This is also an interesting result considering that both containers shared the same docker network.
