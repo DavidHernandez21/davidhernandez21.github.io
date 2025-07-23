@@ -98,5 +98,4 @@ kubelet:
 In this post, we have covered some of the gotchas and best practices when setting up the VictoriaMetrics k8s stack. The stack is easy to set up and maintain, and it provides a good overview of the cluster's health and performance while being cost-effective. However, it is important to keep in mind the differences between monitoring and observability, and to configure the stack according to your needs. Regularly upgrading the stack and watching out for CRDs changes is also recommended to benefit from the latest features and bug fixes.
 
 
-[^1]: Honeycomb’s O’Reilly Book *Observability Engineering: Achieving Production Excellence*  
-By Charity Majors, Liz Fong-Jones, and George Miranda
+[^1]: Honeycomb’s O’Reilly Book *Observability Engineering: Achieving Production Excellence By Charity Majors, Liz Fong-Jones, and George Miranda*
