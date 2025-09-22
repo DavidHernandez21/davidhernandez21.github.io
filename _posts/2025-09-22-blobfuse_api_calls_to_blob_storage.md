@@ -50,7 +50,8 @@ In another terminal, we can start blobfuse2. For these tests, we will use the fo
 <details>
 <summary>Show YAML configuration</summary>
 
-```yaml
+
+{% highlight yaml %}
 # Daemon configuration
 foreground: false # run blobfuse2 in foreground or background
 
@@ -110,7 +111,8 @@ azstorage:
     mode: azcli # kind of authentication to be used
     update-md5: false # set md5 sum on upload. Impacts performance. works only when file-cache component is part of the pipeline
     validate-md5: false # validate md5 on download. Impacts performance. works only when file-cache component is part of the pipeline
-```
+
+{% endhighlight %}
 </details>
 <br>
 
@@ -121,7 +123,7 @@ Optionally, we can create a small Go program to upload files to Blob Storage. We
 <details>
 <summary>Show Go program</summary>
 
-```go
+{% highlight go %}
 package main
 
 import (
@@ -216,15 +218,14 @@ func main() {
     wg.Wait()
 
 }
-```
+{% endhighlight  %}
+</details>
+<br>
 
 ```bash
 go run main.go true
 go run main.go 
 ```
-
-</details>
-<br>
 
 Finally, we can mount the Blob Storage container using blobfuse2, using two special environment variables to point to the mitmproxy proxy:
 
